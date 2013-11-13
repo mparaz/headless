@@ -23,15 +23,17 @@ class Headless
     end
 
     def start_capture
-      nomouse = @nomouse ? "+nomouse" : ""
+      nomouse = @nomouse ? "-draw_mouse 0" : "-draw_mouse 1"
 
       # ffmpeg no longer supports the color depth,
       # accepting trailing characters after the XxY
       # was actually a bug.
+      #
+      # -g 600 (GOP size) is no longer supported
      
-      dimensions_trimmed = /(\d+x\d+)x/.match(dimensions)[1]
-      
-      CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r #{@frame_rate} -g 600 -s #{dimensions_trimmed} -f x11grab -i :#{@display}#{nomouse} -vcodec #{@codec} #{@tmp_file_path}", @pid_file_path, @log_file_path)
+      dimensions_trimmed = /(\d+x\d+)x/.match(@dimensions)[1]
+      cmd = "#{CliUtil.path_to('ffmpeg')} -y -r #{@frame_rate} -s #{dimensions_trimmed} -f x11grab #{nomouse} -i :#{@display} -vcodec #{@codec} #{@tmp_file_path}" 
+      CliUtil.fork_process(cmd, @pid_file_path, @log_file_path)
       at_exit do
         exit_status = $!.status if $!.is_a?(SystemExit)
         stop_and_discard
