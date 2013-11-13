@@ -31,7 +31,7 @@ class Headless
      
       dimensions_trimmed = /(\d+x\d+)x/.match(dimensions)[1]
       
-      CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r #{@frame_rate} -g 600 -s #{@dimensions_trimmed} -f x11grab -i :#{@display}#{nomouse} -vcodec #{@codec} #{@tmp_file_path}", @pid_file_path, @log_file_path)
+      CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r #{@frame_rate} -g 600 -s #{dimensions_trimmed} -f x11grab -i :#{@display}#{nomouse} -vcodec #{@codec} #{@tmp_file_path}", @pid_file_path, @log_file_path)
       at_exit do
         exit_status = $!.status if $!.is_a?(SystemExit)
         stop_and_discard
